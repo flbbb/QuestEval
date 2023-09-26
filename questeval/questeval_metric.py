@@ -107,7 +107,7 @@ class QuestEval:
         self.list_scores = list_scores
         if 'bertscore' in self.list_scores:
             BERTSCORE_PATH = get_env("BERTSCORE_PATH")
-            self.metric_BERTScore = load_metric(BERTSCORE_PATH)
+            self.metric_BERTScore = load_metric(str(BERTSCORE_PATH))
 
         if language == 'en':
             try:

@@ -6,7 +6,7 @@ from typing import Callable, Dict, List, Tuple
 import numpy as np
 import spacy
 import torch
-from datasets import load_metric
+import evaluate
 
 from questeval import DIR, __version__
 from questeval.utils import (
@@ -107,7 +107,7 @@ class QuestEval:
         self.list_scores = list_scores
         if 'bertscore' in self.list_scores:
             BERTSCORE_PATH = get_env("BERTSCORE_PATH")
-            self.metric_BERTScore = load_metric(str(BERTSCORE_PATH))
+            self.metric_BERTScore = evaluate.load(str(BERTSCORE_PATH))
 
         if language == 'en':
             try:

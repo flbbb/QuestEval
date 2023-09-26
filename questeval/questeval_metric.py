@@ -1,19 +1,22 @@
-from typing import List, Tuple, Dict, Callable
-import os
 import json
-import numpy as np
 import logging
-from datasets import load_metric
+import os
+from typing import Callable, Dict, List, Tuple
+
+import numpy as np
 import spacy
 import torch
+from datasets import load_metric
+
 from questeval import DIR, __version__
 from questeval.utils import (
     API_T2T,
-    sentencize,
-    calculate_f1_squad,
     calculate_BERTScore,
+    calculate_f1_squad,
     extract_table_answers,
-    text2hash
+    get_env,
+    sentencize,
+    text2hash,
 )
 
 HF_ORGANIZATION = "ThomasNLG"
@@ -103,7 +106,8 @@ class QuestEval:
         self.do_weighter = do_weighter
         self.list_scores = list_scores
         if 'bertscore' in self.list_scores:
-            self.metric_BERTScore = load_metric("bertscore")
+            BERTSCORE_PATH = get_env("BERTSCORE_PATH")
+            self.metric_BERTScore = load_metric(BERTSCORE_PATH)
 
         if language == 'en':
             try:
@@ -132,16 +136,17 @@ class QuestEval:
         # Textual hypothesis
         models = {"hyp": {}}
         if self.language == 'en':
-            models['hyp']['QA'] = f'{HF_ORGANIZATION}/t5-qa_squad2neg-en'
-            models['hyp']['QG'] = f'{HF_ORGANIZATION}/t5-qg_squad1-en'
+            MODELS_QUESTEVAL_PATH = get_env("MODELS_QUESTEVAL_PATH")
+            models['hyp']['QA'] = f'{MODELS_QUESTEVAL_PATH}/t5-qa_squad2neg-en'
+            models['hyp']['QG'] = f'{MODELS_QUESTEVAL_PATH}/t5-qg_squad1-en'
         else:
             raise("Multilingual evaluation not handled yet.")
 
         # (if) multimodal sources
         if self.task == "data2text":
             models['src'] = dict()
-            models['src']['QA'] = f'{HF_ORGANIZATION}/t5-qa_webnlg_synth-en'
-            models['src']['QG'] = f'{HF_ORGANIZATION}/t5-qg_webnlg_synth-en'
+            models['src']['QA'] = f'{MODELS_QUESTEVAL_PATH}/t5-qa_webnlg_synth-en'
+            models['src']['QG'] = f'{MODELS_QUESTEVAL_PATH}/t5-qg_webnlg_synth-en'
 
         # Loading all the different models
         for modality in models.keys():
@@ -716,7 +721,8 @@ class QuestEval:
             if 'weighter' in model_name.lower():
                 # 1176 is the index for the token true in T5 vocabulary
                 keep_score_idx = 1176
-            if model_name == f"{HF_ORGANIZATION}/t5-qg_squad1-en":
+            MODELS_QUESTEVAL_PATH = get_env("MODELS_QUESTEVAL_PATH")
+            if model_name == f"{MODELS_QUESTEVAL_PATH}/t5-qg_squad1-en":
                 # the default models were trained with this prefix 'sv1' and 'nqa' prefix on the two datasets
                 self.qg_prefix = 'sv1'
 

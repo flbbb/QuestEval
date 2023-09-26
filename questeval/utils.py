@@ -1,16 +1,18 @@
-from typing import Dict, List, Optional, Tuple
-import string
-import re
-import unidecode
 import collections
-import torch
 import hashlib
+import os
+import re
+import string
+from pathlib import Path
+from typing import Dict, List, Optional, Tuple
 
-from transformers import (
-    T5ForConditionalGeneration,
-    T5Tokenizer,
-)
+import torch
+import unidecode
+from transformers import T5ForConditionalGeneration, T5Tokenizer
 
+
+def get_env(env_variable):
+    return Path(os.environ[env_variable])
 
 def text2hash(string: str) -> str:
     hash_object = hashlib.sha512(string.encode('utf-8'))

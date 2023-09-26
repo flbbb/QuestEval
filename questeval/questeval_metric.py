@@ -3,10 +3,10 @@ import logging
 import os
 from typing import Callable, Dict, List, Tuple
 
+import evaluate
 import numpy as np
 import spacy
 import torch
-import evaluate
 
 from questeval import DIR, __version__
 from questeval.utils import (
@@ -179,17 +179,15 @@ class QuestEval:
 
         assert hypothesis is not None
 
-        having_sources = (
-            sources is not None
-            and all([isinstance(s, str) for s in sources])  # Only str allowed
-        )
+        having_sources = sources is not None
+        
         having_references = (
             list_references is not None
             and all([isinstance(r, str) for rs in list_references for r in rs])  # Only str allowed
             and len(set([len(rs) for rs in list_references])) == 1  # Same number of refs per ex
         )
 
-        assert having_sources or having_references, "You need to provide at least correct sources or correct references."
+        # assert having_sources or having_references, "You need to provide at least correct sources or correct references."
         if having_references:
             assert len(list_references) == len(hypothesis)
         if having_sources:

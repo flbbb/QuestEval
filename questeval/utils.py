@@ -329,7 +329,7 @@ class Triple:
             raise TypeError('A triple must be a string with two "|"'
                             f'but you gave: {raw_text}')
 
-        split = raw_text.strip().split('|')
+        split = raw_text.strip().split(' | ')
         if not len(split) == 3:
             raise TypeError('A triple must be a string with two "|"'
                             f'but you gave: {raw_text}')
